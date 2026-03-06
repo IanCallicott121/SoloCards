@@ -37,10 +37,16 @@ const els = {
   message: document.querySelector("#message"),
   newGame: document.querySelector("#new-game"),
   hint: document.querySelector("#hint"),
+  playAgain: document.querySelector("#play-again"),
+  victoryOverlay: document.querySelector("#victory-overlay"),
+  victoryCards: document.querySelector("#victory-cards"),
+  victorySubtitle: document.querySelector("#victory-subtitle"),
   cardTemplate: document.querySelector("#card-template")
 };
 
 let dragContext = null;
+let victoryShown = false;
+let audioContext = null;
 
 function createDeck() {
   const deck = [];
@@ -89,6 +95,10 @@ function startGame() {
   }
 
   state.stock = deck.map((card) => ({ ...card, faceUp: false }));
+  victoryShown = false;
+  els.victoryOverlay.classList.remove("active");
+  els.victoryOverlay.setAttribute("aria-hidden", "true");
+  els.victoryCards.replaceChildren();
   setMessage("Build ascending dragon hoards by suit.");
   render();
 }
@@ -101,10 +111,90 @@ function rankLabel(rank) {
   return RANK_LABELS[rank] ?? String(rank);
 }
 
+function getAudioContext() {
+  if (!audioContext) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) {
+      return null;
+    }
+    audioContext = new AudioContextClass();
+  }
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+
+  return audioContext;
+}
+
+function playTone({
+  startFrequency,
+  endFrequency,
+  duration = 0.12,
+  type = "sine",
+  volume = 0.03
+}) {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  const now = context.currentTime;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(startFrequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(
+    Math.max(endFrequency, 1),
+    now + duration
+  );
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration);
+}
+
+function playMoveSound() {
+  playTone({
+    startFrequency: 440,
+    endFrequency: 620,
+    duration: 0.08,
+    type: "triangle",
+    volume: 0.022
+  });
+}
+
+function playPlaceSound() {
+  playTone({
+    startFrequency: 540,
+    endFrequency: 300,
+    duration: 0.16,
+    type: "sine",
+    volume: 0.04
+  });
+
+  window.setTimeout(() => {
+    playTone({
+      startFrequency: 660,
+      endFrequency: 520,
+      duration: 0.14,
+      type: "triangle",
+      volume: 0.02
+    });
+  }, 36);
+}
+
 function moveCards(source, target) {
   source.remove(source.index, source.count);
   target.insert(source.cards);
   state.moves += 1;
+  playPlaceSound();
   revealTopCards();
   render();
   checkForWin();
@@ -138,6 +228,7 @@ function drawFromStock() {
   card.faceUp = true;
   state.waste.push(card);
   state.moves += 1;
+  playPlaceSound();
   setMessage(`Drew ${describeCard(card)}.`);
   render();
 }
@@ -230,6 +321,7 @@ function handleCardDragStart(event) {
 
   dragContext = payload;
   card.classList.add("dragging");
+  playMoveSound();
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", card.dataset.cardId);
 }
@@ -388,9 +480,35 @@ function checkForWin() {
   const won = FOUNDATION_SUIT_ORDER.every(
     (suit) => state.foundations[suit].length === 13
   );
-  if (won) {
+  if (won && !victoryShown) {
+    victoryShown = true;
     setMessage("Victory. The dragon hoard is complete.");
+    showVictoryCelebration();
   }
+}
+
+function showVictoryCelebration() {
+  els.victoryOverlay.classList.add("active");
+  els.victoryOverlay.setAttribute("aria-hidden", "false");
+  els.victorySubtitle.textContent = `Player wins in ${state.moves} moves. A disciplined finish and a table worth respecting.`;
+  els.victoryCards.replaceChildren();
+
+  const victoryDeck = createDeck().map((card, index) => {
+    const node = createCardElement({ ...card, faceUp: true });
+    node.classList.add("victory-card");
+    node.style.zIndex = String(index + 1);
+    node.style.setProperty("--from-x", `${Math.random() * 80 - 40}px`);
+    node.style.setProperty("--from-y", `${Math.random() * 80 - 40}px`);
+    node.style.setProperty("--to-x", `${Math.random() * 1180 - 590}px`);
+    node.style.setProperty("--to-y", `${Math.random() * 620 - 310}px`);
+    node.style.setProperty("--rot-start", `${Math.random() * 90 - 45}deg`);
+    node.style.setProperty("--rot-end", `${Math.random() * 160 - 80}deg`);
+    node.style.setProperty("--drift", `${(index % 9) * 0.22}s`);
+    node.draggable = false;
+    return node;
+  });
+
+  els.victoryCards.append(...victoryDeck);
 }
 
 function createCardElement(card, offsetY = 0) {
@@ -524,5 +642,6 @@ function render() {
 els.stock.addEventListener("click", drawFromStock);
 els.newGame.addEventListener("click", startGame);
 els.hint.addEventListener("click", autoMove);
+els.playAgain.addEventListener("click", startGame);
 
 startGame();
