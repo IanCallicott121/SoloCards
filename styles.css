@@ -1,0 +1,343 @@
+:root {
+  --bg-deep: #071310;
+  --bg-surface: rgba(9, 31, 26, 0.9);
+  --bg-plate: rgba(14, 48, 40, 0.82);
+  --line: rgba(170, 227, 189, 0.18);
+  --text: #edf6ef;
+  --muted: #b9ccbe;
+  --gold: #e2b45c;
+  --ember: #f26d4d;
+  --jade: #67c88d;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --card-width: 120px;
+  --card-height: 168px;
+  --card-gap: 30px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Avenir Next, Avenir, Segoe UI, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(38, 112, 78, 0.35), transparent 34%),
+    radial-gradient(circle at 80% 20%, rgba(226, 180, 92, 0.14), transparent 18%),
+    linear-gradient(160deg, #081613, #071310 60%, #0d221e);
+  overflow: hidden;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.sky-glow {
+  position: absolute;
+  inset: auto;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sky-glow-left {
+  top: -120px;
+  left: -120px;
+  background: rgba(103, 200, 141, 0.18);
+}
+
+.sky-glow-right {
+  right: -80px;
+  bottom: -120px;
+  background: rgba(242, 109, 77, 0.16);
+}
+
+.topbar,
+.status-panel,
+.table {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.eyebrow,
+.pile-label,
+.status-label {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 4px 0 0;
+  font-family: Baskerville, Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+}
+
+.control-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--gold), #f1cf85);
+  color: #1d180b;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(226, 180, 92, 0.24);
+}
+
+.control-button-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.status-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(14px);
+}
+
+.table {
+  min-height: calc(100vh - 220px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgba(8, 28, 24, 0.92), rgba(10, 38, 32, 0.88)),
+    radial-gradient(circle at center, rgba(103, 200, 141, 0.12), transparent 55%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.pile-cluster,
+.foundation-cluster,
+.tableau-cluster {
+  display: flex;
+  gap: 18px;
+}
+
+.foundation-cluster {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.tableau-cluster {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.pile-frame {
+  width: var(--card-width);
+}
+
+.pile {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(4, 13, 11, 0.3);
+}
+
+.pile::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+
+.pile-stock {
+  cursor: pointer;
+}
+
+.pile-stock.stock-ready::before {
+  content: "🐉";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  opacity: 0.7;
+}
+
+.tableau-pile {
+  position: relative;
+  width: var(--card-width);
+  min-height: 540px;
+  padding-bottom: 12px;
+}
+
+.tableau-dropzone {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  background: rgba(3, 11, 9, 0.16);
+}
+
+.pile.highlight,
+.tableau-pile.highlight .tableau-dropzone {
+  border-color: rgba(226, 180, 92, 0.8);
+  box-shadow: 0 0 0 2px rgba(226, 180, 92, 0.18);
+}
+
+.card {
+  position: absolute;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: 18px;
+  padding: 12px;
+  border: 1px solid rgba(9, 20, 17, 0.55);
+  background:
+    linear-gradient(155deg, rgba(255, 251, 238, 0.98), rgba(230, 237, 227, 0.96));
+  box-shadow:
+    0 18px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  color: #10251c;
+  user-select: none;
+  touch-action: none;
+}
+
+.card[data-color="red"] {
+  color: #9e2f30;
+}
+
+.card.face-down {
+  background:
+    linear-gradient(150deg, rgba(16, 46, 40, 0.98), rgba(8, 21, 18, 0.96)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent);
+  color: transparent;
+  border-color: rgba(169, 231, 188, 0.16);
+  overflow: hidden;
+}
+
+.card.face-down::before,
+.card.face-down::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card.face-down::after {
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(103, 200, 141, 0.3), transparent 28%),
+    linear-gradient(135deg, rgba(226, 180, 92, 0.22), transparent 60%);
+}
+
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.card-corner-top {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+}
+
+.card-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2.9rem;
+  opacity: 0.92;
+}
+
+.card-dragon {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 52px;
+  height: 52px;
+  opacity: 0.2;
+}
+
+.card-dragon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.card.face-down .card-corner,
+.card.face-down .card-center,
+.card.face-down .card-dragon {
+  display: none;
+}
+
+.dragging {
+  opacity: 0.2;
+}
+
+.floating-stack {
+  pointer-events: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 30;
+}
+
+.floating-stack .card {
+  box-shadow: 0 26px 40px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 1240px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell {
+    min-width: 1180px;
+  }
+}

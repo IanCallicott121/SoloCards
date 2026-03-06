@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>SoloCards</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="sky-glow sky-glow-left"></div>
+      <div class="sky-glow sky-glow-right"></div>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Dragon Table</p>
+          <h1>Solo / Patience</h1>
+        </div>
+        <div class="controls">
+          <button id="new-game" class="control-button">New Game</button>
+          <button id="hint" class="control-button control-button-ghost">Auto Move</button>
+        </div>
+      </header>
+
+      <section class="status-panel">
+        <div class="status-card">
+          <span class="status-label">Moves</span>
+          <strong id="move-count">0</strong>
+        </div>
+        <div class="status-card">
+          <span class="status-label">Stock</span>
+          <strong id="stock-count">24</strong>
+        </div>
+        <div class="status-card">
+          <span class="status-label">Message</span>
+          <strong id="message">Build ascending dragon hoards by suit.</strong>
+        </div>
+      </section>
+
+      <main class="table">
+        <section class="top-row">
+          <div class="pile-cluster">
+            <div class="pile-frame">
+              <div class="pile-label">Stock</div>
+              <div id="stock" class="pile pile-stock"></div>
+            </div>
+            <div class="pile-frame">
+              <div class="pile-label">Waste</div>
+              <div id="waste" class="pile"></div>
+            </div>
+          </div>
+          <div class="foundation-cluster" id="foundations"></div>
+        </section>
+
+        <section class="tableau-cluster" id="tableau"></section>
+      </main>
+    </div>
+
+    <template id="card-template">
+      <article class="card" draggable="true">
+        <div class="card-corner card-corner-top">
+          <span class="card-rank"></span>
+          <span class="card-suit"></span>
+        </div>
+        <div class="card-center">
+          <span class="card-suit-large"></span>
+        </div>
+        <div class="card-dragon" aria-hidden="true">
+          <svg viewBox="0 0 120 120" role="presentation">
+            <path
+              d="M92 24c-10 2-16 10-18 17-7-8-21-11-31-4 7 0 13 4 16 9-9 1-17 7-21 15-4 8-4 18 0 26-7-2-13-1-18 4 9 0 16 6 19 14 3 8 1 16-4 23 11-2 20-9 24-19 7 5 15 7 23 6-4-3-7-8-8-13 10 0 19-5 24-13 6-9 7-21 1-31 7-1 12-7 13-14-5 3-13 2-20-4z"
+            />
+          </svg>
+        </div>
+      </article>
+    </template>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

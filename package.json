@@ -1,0 +1,12 @@
+{
+  "name": "solocards",
+  "version": "1.0.0",
+  "description": "Dragon-themed Solo / Patience Electron app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^37.0.0"
+  }
+}
